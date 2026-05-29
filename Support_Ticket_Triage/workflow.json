@@ -1,0 +1,470 @@
+{
+  "updatedAt": "2026-05-25T14:15:44.772Z",
+  "createdAt": "2026-05-22T11:10:39.246Z",
+  "id": "yyrq7QlAdNuEYzbm",
+  "name": "Support Ticket Triage",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "sender": ""
+        }
+      },
+      "id": "94323ffd-5db8-4e3b-8609-b800bf60a7e6",
+      "name": "Watch Support Emails",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        128
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bHHSw0V23dNLDJiX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const email = $input.item.json;\nconst subject = email.subject || '';\nconst body = email.text || email.snippet || '';\nconst from = email.from || '';\nconst messageId = email.id || '';\nconst threadId = email.threadId || '';\n\nreturn [{ json: { subject, body: body.substring(0, 2000), from, messageId, threadId } }];"
+      },
+      "id": "dec8f467-37d8-437a-82e9-4868a9ba9729",
+      "name": "Extract Email Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -656,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.item.json.text || $input.item.json.content || '';\ntry {\n  const cleaned = raw.replace(/```json|```/g, '').trim();\n  const parsed = JSON.parse(cleaned);\n  const email = $('Extract Email Data').item.json;\n  return [{ json: { ...parsed, ...email } }];\n} catch(e) {\n  return [{ json: { error: 'Parse failed', raw, ...$('Extract Email Data').item.json } }];\n}"
+      },
+      "id": "0bb1c9ac-09ef-4a8c-9962-d14e95981112",
+      "name": "Parse Triage Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1A6DLKFhFYmPqgS_lfTnKhLIusTAe_Rbp32S5mbIeUhM",
+          "mode": "list",
+          "cachedResultName": "Support Ticket Triage",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1A6DLKFhFYmPqgS_lfTnKhLIusTAe_Rbp32S5mbIeUhM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "mode": "list",
+          "__rl": true,
+          "value": "gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "From": "={{ $json.from }}",
+            "Subject": "={{ $json.subject }}{{ $json.subject || $json.body.substring(0, 50) }}\n",
+            "Summary": "={{ $json.summary }}",
+            "Urgency": "={{ $json.urgency }}",
+            "Category": "={{ $json.category }}",
+            "Sentiment": "={{ $json.sentiment }}",
+            "Suggested Reply": "={{ $json.suggested_reply }}",
+            "Thread ID": "={{ $json.threadId }}"
+          },
+          "matchingColumns": [
+            "Thread ID"
+          ],
+          "schema": [
+            {
+              "id": "From",
+              "displayName": "From",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Urgency",
+              "displayName": "Urgency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sentiment",
+              "displayName": "Sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Assigned Team",
+              "displayName": "Assigned Team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Suggested Reply",
+              "displayName": "Suggested Reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resolution Time",
+              "displayName": "Resolution Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Received At",
+              "displayName": "Received At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Thread ID",
+              "displayName": "Thread ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0fcc6d85-9ba0-4477-9395-394d229e9aab",
+      "name": "Log to Tickets Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#all-wara",
+          "mode": "name"
+        },
+        "text": "={{ \n  ($json.urgency === 'critical' ? '\ud83d\udea8' : $json.urgency === 'high' ? '\ud83d\udd34' : $json.urgency === 'medium' ? '\ud83d\udfe1' : '\ud83d\udfe2') + ' *[' + $json.urgency.toUpperCase() + '] New Support Ticket*\\n\\n' +\n  '*From:* ' + $json.from + '\\n' +\n  '*Subject:* ' + $json.subject + '\\n' +\n  '*Category:* ' + $json.category + ' | *Team:* ' + $json.suggested_team + '\\n' +\n  '*Sentiment:* ' + $json.sentiment + '\\n\\n' +\n  '*Summary:* ' + $json.summary + '\\n\\n' +\n  '*\u270d\ufe0f Suggested Reply:*\\n' + $json.suggested_reply + '\\n\\n' +\n  '_Logged to Google Sheets_'\n}}",
+        "otherOptions": {}
+      },
+      "id": "067f5fe1-c90b-4205-a5a1-5e02284fbfcc",
+      "name": "Notify Team on Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        240
+      ],
+      "webhookId": "f5ee7035-f0b7-42e1-8abc-a76c94637602",
+      "credentials": {
+        "slackApi": {
+          "id": "iKF2XiBQQvOeNduo",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.urgency }}",
+              "rightValue": "critical",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f4b77e65-2904-4a60-9423-3fa469996868",
+      "name": "Is Critical?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        0,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_SUPPORT_EMAIL@gmail.com",
+        "subject": "=\ud83d\udea8 CRITICAL Support Ticket: {{ $json.subject }}",
+        "emailType": "text",
+        "message": "=A critical support ticket just came in and needs immediate attention.\n\nFrom: {{ $json.from }}\nSubject: {{ $json.subject }}\nSummary: {{ $json.summary }}\nSentiment: {{ $json.sentiment }}\n\nSuggested Reply:\n{{ $json.suggested_reply }}\n\nPlease respond ASAP.",
+        "options": {}
+      },
+      "id": "92e63a25-3054-4f86-b383-d180d446bd59",
+      "name": "Email Alert for Critical",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        368
+      ],
+      "webhookId": "5c19d774-db40-40c2-b10a-f2e6fd6677e1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bHHSw0V23dNLDJiX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        352
+      ],
+      "id": "995a52e6-39fa-4adb-888d-7830f5814fe8",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "11jBacWPd3zwjyHg",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a customer support triage expert. Analyze this support email and classify it.\n\nFrom: {{ $json.from }}\nSubject: {{ $json.subject }}\nMessage: {{ $json.body }}\n\nRespond with valid JSON only. No markdown, no backticks:\n{\n  \"urgency\": \"critical|high|medium|low\",\n  \"category\": \"billing|technical|feature_request|complaint|general_inquiry|refund|account\",\n  \"sentiment\": \"angry|frustrated|neutral|satisfied\",\n  \"summary\": \"one sentence summary of the issue\",\n  \"suggested_reply\": \"a professional empathetic draft reply under 150 words\",\n  \"suggested_team\": \"billing|engineering|product|general_support\",\n  \"estimated_resolution\": \"immediate|within_24h|within_week|ongoing\"\n}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -496,
+        128
+      ],
+      "id": "508d5e8d-58ec-4e7f-b3e7-d9642e20584d",
+      "name": "Basic LLM Chain"
+    }
+  ],
+  "connections": {
+    "Watch Support Emails": {
+      "main": [
+        [
+          {
+            "node": "Extract Email Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Triage Result": {
+      "main": [
+        [
+          {
+            "node": "Log to Tickets Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Team on Slack",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Critical?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Critical?": {
+      "main": [
+        [
+          {
+            "node": "Email Alert for Critical",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Email Data": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Parse Triage Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "579a2a1e-8f84-4862-9c7f-1af9b5e3a7dd",
+  "activeVersionId": null,
+  "versionCounter": 35,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-05-22T11:10:39.254Z",
+      "createdAt": "2026-05-22T11:10:39.254Z",
+      "role": "workflow:owner",
+      "workflowId": "yyrq7QlAdNuEYzbm",
+      "projectId": "Iq1L14HqUAHCPUBu",
+      "project": {
+        "updatedAt": "2026-05-22T10:44:17.180Z",
+        "createdAt": "2026-05-22T10:43:17.263Z",
+        "id": "Iq1L14HqUAHCPUBu",
+        "name": "Hashir Wara <hasheralwara@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ee0472ac-5224-40b4-a822-f71f776399c1"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

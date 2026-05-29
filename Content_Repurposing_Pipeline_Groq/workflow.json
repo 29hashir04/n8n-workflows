@@ -1,0 +1,391 @@
+{
+  "updatedAt": "2026-05-22T14:30:58.255Z",
+  "createdAt": "2026-05-22T11:08:47.890Z",
+  "id": "ESH0QWWQmeioxP7Q",
+  "name": "Content Repurposing Pipeline (Groq)",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E",
+          "mode": "list",
+          "cachedResultName": "Content Repurposing Pipeline",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Blog Posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Ready to Repurpose"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "39012fae-7469-47ec-b8d3-f7b1bbf7cb79",
+      "name": "Get Blog Posts from Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -224,
+        -208
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E",
+          "mode": "list",
+          "cachedResultName": "Content Repurposing Pipeline",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1639480721,
+          "mode": "list",
+          "cachedResultName": "Repurposed Content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E/edit#gid=1639480721"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "LinkedIn Post": "={{ $json.linkedin_post }}",
+            "Tweet 1": "={{ $json.tweet_1 }}",
+            "Tweet 2": "={{ $json.tweet_2 }}",
+            "Tweet 3": "={{ $json.tweet_3 }}",
+            "Tweet 4": "={{ $json.tweet_4 }}",
+            "Tweet 5": "={{ $json.tweet_5 }}",
+            "Newsletter Snippet": "={{ $json.newsletter_snippet }}",
+            "Instagram Caption": "={{ $json.instagram_caption }}",
+            "Title": "={{ $json.title }}"
+          },
+          "matchingColumns": [
+            "Title"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LinkedIn Post",
+              "displayName": "LinkedIn Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tweet 1",
+              "displayName": "Tweet 1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tweet 2",
+              "displayName": "Tweet 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tweet 3",
+              "displayName": "Tweet 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tweet 4",
+              "displayName": "Tweet 4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tweet 5",
+              "displayName": "Tweet 5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Newsletter Snippet",
+              "displayName": "Newsletter Snippet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instagram Caption",
+              "displayName": "Instagram Caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "7d1ff2e3-5a89-4e51-b2fb-5e6b9a464d40",
+      "name": "Save to Repurposed Content Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        560,
+        -336
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#all-wara",
+          "mode": "name"
+        },
+        "text": "=\u2705 *Content Repurposed: {{ $json.title }}*\n\n*LinkedIn Post:*\n{{ $json.linkedin_post }}\n\n*Tweets ready:* {{ $json.tweets.length }}\n*Newsletter snippet:* \u2713\n*Instagram caption:* \u2713\n\n_All content saved to Google Sheets_",
+        "otherOptions": {}
+      },
+      "id": "ed380405-e2f1-459a-a2ae-8c52541f97d9",
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        -96
+      ],
+      "webhookId": "2646719d-5b52-46da-92e6-3e6b6a11a793",
+      "credentials": {
+        "slackApi": {
+          "id": "iKF2XiBQQvOeNduo",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a social media content expert. Repurpose the following blog post.\n\nBlog Title: {{ $json['Title'] }}\nBlog Content: {{ $json['Content'] }}\nBrand Voice: {{ $json['Brand Voice'] }}\n\nRespond with valid JSON only. No markdown, no backticks, no explanation:\n{\n  \"title\": \"{{ $json['Title'] }}\",\n  \"linkedin_post\": \"150-200 word LinkedIn post with 3 hashtags\",\n  \"tweet_1\": \"tweet under 280 chars\",\n  \"tweet_2\": \"tweet under 280 chars\",\n  \"tweet_3\": \"tweet under 280 chars\",\n  \"tweet_4\": \"tweet under 280 chars\",\n  \"tweet_5\": \"tweet under 280 chars\",\n  \"newsletter_snippet\": \"100 word newsletter intro\",\n  \"instagram_caption\": \"caption with 5 hashtags\"\n}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        0,
+        -224
+      ],
+      "id": "d4bda8dc-2733-4423-a001-4b0a1bf7f997",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -48
+      ],
+      "id": "ce4afdef-35d7-449b-992d-e09f122dc346",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "11jBacWPd3zwjyHg",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds"
+            }
+          ]
+        }
+      },
+      "id": "2ec45761-fbc1-482f-a466-6ba397663083",
+      "name": "Every Monday 9AM1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -448,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "let raw = $input.item.json.text || \n          $input.item.json.output || \n          $input.item.json.response || '';\n\nraw = raw.replace(/\\\\n/g, '\\n').replace(/\\\\\"/g, '\"');\n\nconst titleMatch = raw.match(/\"title\"\\s*:\\s*\"([^\"]+)\"/);\nconst title = titleMatch ? titleMatch[1] : '';\n\ntry {\n  const cleaned = raw.replace(/```json|```/g, '').trim();\n  const parsed = JSON.parse(cleaned);\n  return {\n    title: title || parsed.title || '',\n    linkedin_post: parsed.linkedin_post || '',\n    tweet_1: parsed.tweet_1 || '',\n    tweet_2: parsed.tweet_2 || '',\n    tweet_3: parsed.tweet_3 || '',\n    tweet_4: parsed.tweet_4 || '',\n    tweet_5: parsed.tweet_5 || '',\n    newsletter_snippet: parsed.newsletter_snippet || '',\n    instagram_caption: parsed.instagram_caption || ''\n  };\n} catch(e) {\n  return { error: e.message, raw: raw.substring(0, 200) };\n}"
+      },
+      "id": "3630369c-0581-472a-aeb6-26b7e4b38597",
+      "name": "Parse Groq Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        -224
+      ]
+    }
+  ],
+  "connections": {
+    "Get Blog Posts from Sheet": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Parse Groq Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every Monday 9AM1": {
+      "main": [
+        [
+          {
+            "node": "Get Blog Posts from Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Groq Response": {
+      "main": [
+        [
+          {
+            "node": "Save to Repurposed Content Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a53f915e-4acd-4afc-9f00-c4bcbc5ff365",
+  "activeVersionId": null,
+  "versionCounter": 143,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-05-22T11:08:47.899Z",
+      "createdAt": "2026-05-22T11:08:47.899Z",
+      "role": "workflow:owner",
+      "workflowId": "ESH0QWWQmeioxP7Q",
+      "projectId": "Iq1L14HqUAHCPUBu",
+      "project": {
+        "updatedAt": "2026-05-22T10:44:17.180Z",
+        "createdAt": "2026-05-22T10:43:17.263Z",
+        "id": "Iq1L14HqUAHCPUBu",
+        "name": "Hashir Wara <hasheralwara@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ee0472ac-5224-40b4-a822-f71f776399c1"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

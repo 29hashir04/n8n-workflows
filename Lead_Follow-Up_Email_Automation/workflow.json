@@ -1,0 +1,885 @@
+{
+  "updatedAt": "2026-05-25T15:04:51.788Z",
+  "createdAt": "2026-05-22T21:58:24.540Z",
+  "id": "GciPfH8zKPU5kU32",
+  "name": "Lead Follow-Up Email Automation",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "d34f5b41-02e1-41b1-a0bb-27349437bc6b",
+      "name": "New Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        48
+      ],
+      "webhookId": "new-lead-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.item.json.body || $input.item.json;\nconst name = body.name || body.full_name || body.firstName || 'there';\nconst email = body.email || '';\nconst company = body.company || body.organization || '';\nconst service = body.service || body.interest || body.message || '';\nconst source = body.source || 'website';\nconst leadId = 'lead_' + Date.now();\n\nif (!email) return [{ json: { error: 'No email provided' } }];\n\nreturn [{ json: { name, email, company, service, source, leadId, createdAt: new Date().toISOString() } }];"
+      },
+      "id": "e6ccfab9-95a4-4019-893f-698eebe5ff48",
+      "name": "Parse Lead Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1XRstQU5SI2ZwQLog6zMHAsjSGc9OIBLnU0q6mW1eD84",
+          "mode": "list",
+          "cachedResultName": "Lead Follow-Up",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XRstQU5SI2ZwQLog6zMHAsjSGc9OIBLnU0q6mW1eD84/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XRstQU5SI2ZwQLog6zMHAsjSGc9OIBLnU0q6mW1eD84/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead ID": "={{ $json.leadId }}",
+            "Name": "={{ $json.name }}",
+            "Email": "={{ $json.email }}",
+            "Company": "={{ $json.company }}",
+            "Service Interest": "={{ $json.service }}",
+            "Source": "={{ $json.source }}",
+            "Status": "New",
+            "Email 1 Sent": "No",
+            "Email 2 Sent": "No",
+            "Email 3 Sent": "No",
+            "Created At": "={{ $json.createdAt }}"
+          },
+          "matchingColumns": [
+            "Lead ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Service Interest",
+              "displayName": "Service Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email 1 Sent",
+              "displayName": "Email 1 Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email 2 Sent",
+              "displayName": "Email 2 Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email 3 Sent",
+              "displayName": "Email 3 Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "c850efe9-d523-4c42-acb7-91ebd3ccd3d7",
+      "name": "Save Lead to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -176,
+        -192
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert sales copywriter. Write a warm, personalised first follow-up email for a new lead.\n\nLead details:\n- Name: {{ $json.name }}\n- Company: {{ $json.company }}\n- Service Interest: {{ $json.service }}\n- Source: {{ $json.source }}\n\nEmail requirements:\n- Subject line: compelling, personalised, under 60 chars\n- Body: 3-4 short paragraphs\n- Tone: professional but warm, human not robotic\n- Acknowledge their specific interest\n- Mention 1-2 relevant benefits\n- Clear CTA: book a 15-min call\n- PS line: adds curiosity or social proof\n- No generic templates, no buzzwords\n\nRespond with valid JSON only. No markdown, no backticks:\n{\n  \"subject\": \"email subject line\",\n  \"body\": \"full email body with line breaks as \\n\"\n}"
+      },
+      "id": "925e0fd7-9e3e-4c44-ae1e-4ed567ab5cdf",
+      "name": "Generate Email 1",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -304,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "id": "7cdfd96b-9cfe-4d15-87c1-d37f668aadf1",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        256
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "11jBacWPd3zwjyHg",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let raw = $input.item.json.text || $input.item.json.output || '';\n\n// Clean control characters\nraw = raw\n  .replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, '')\n  .replace(/\\\\n/g, '\\n')\n  .replace(/\\\\t/g, ' ')\n  .replace(/```json|```/g, '')\n  .trim();\n\ntry {\n  const parsed = JSON.parse(raw);\n  const lead = $('Parse Lead Data').item.json;\n  return [{ json: { \n    ...lead, \n    subject: parsed.subject || '',\n    body: parsed.body || ''\n  }}];\n} catch(e) {\n  // Try extracting with regex if JSON parse fails\n  const subjectMatch = raw.match(/\"subject\"\\s*:\\s*\"([^\"]+)\"/);\n  const bodyMatch = raw.match(/\"body\"\\s*:\\s*\"([\\s\\S]+?)\"\\s*\\}/);\n  const lead = $('Parse Lead Data').item.json;\n  return [{ json: {\n    ...lead,\n    subject: subjectMatch ? subjectMatch[1] : 'Following up on your interest',\n    body: bodyMatch ? bodyMatch[1].replace(/\\\\n/g, '\\n') : raw\n  }}];\n}"
+      },
+      "id": "4cd25129-69fa-4255-9854-9532bbbf2b72",
+      "name": "Parse Email 1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "replyTo": "hasheralwara@gmail.com"
+        }
+      },
+      "id": "7bb865e3-883d-4e56-8919-1574d48d3a29",
+      "name": "Send Email 1 (Immediate)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        352,
+        64
+      ],
+      "webhookId": "6683949d-601e-4e96-bbee-6b3d5b9c9f19",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bHHSw0V23dNLDJiX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "id": "f8cc81ad-a88d-449b-9096-c993b5d78773",
+      "name": "Wait 2 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        64
+      ],
+      "webhookId": "da2c96a2-7a41-4a0c-88d5-3febf7b2ba0d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert sales copywriter. Write a follow-up email for a lead who did NOT reply to the first email sent 2 days ago.\n\nLead details:\n- Name: {{ $json.name }}\n- Company: {{ $json.company }}\n- Service Interest: {{ $json.service }}\n\nEmail requirements:\n- Subject: reply to previous thread style (Re: or different angle)\n- Body: SHORT \u2014 2 paragraphs max\n- Tone: casual, not pushy, adds NEW value (tip, insight, or quick win related to their interest)\n- Different angle from email 1\n- Soft CTA: just asking if they saw the previous email\n- No apologies for following up\n\nRespond with valid JSON only. No markdown, no backticks:\n{\n  \"subject\": \"email subject line\",\n  \"body\": \"full email body\"\n}"
+      },
+      "id": "9cd4c660-567b-4293-897f-8976ff6d83db",
+      "name": "Generate Email 2",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        736,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "id": "40b2ee4b-96d8-4a92-b665-90bee07d8935",
+      "name": "Groq Chat Model 2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        784,
+        224
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "11jBacWPd3zwjyHg",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let raw = $input.item.json.text || $input.item.json.output || '';\n\nraw = raw\n  .replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, '')\n  .replace(/\\\\n/g, '\\n')\n  .replace(/\\\\t/g, ' ')\n  .replace(/```json|```/g, '')\n  .trim();\n\ntry {\n  const parsed = JSON.parse(raw);\n  const lead = $('Parse Lead Data').item.json;\n  return [{ json: { \n    ...lead, \n    subject: parsed.subject || '',\n    body: parsed.body || ''\n  }}];\n} catch(e) {\n  const subjectMatch = raw.match(/\"subject\"\\s*:\\s*\"([^\"]+)\"/);\n  const bodyMatch = raw.match(/\"body\"\\s*:\\s*\"([\\s\\S]+?)\"\\s*\\}/);\n  const lead = $('Parse Lead Data').item.json;\n  return [{ json: {\n    ...lead,\n    subject: subjectMatch ? subjectMatch[1] : 'Quick follow up',\n    body: bodyMatch ? bodyMatch[1].replace(/\\\\n/g, '\\n') : raw\n  }}];\n}"
+      },
+      "id": "ab201d35-eccb-45a7-b3a9-34d2e64ed7fe",
+      "name": "Parse Email 2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "replyTo": "hasheralwara@gmail.com"
+        }
+      },
+      "id": "a88f4f5c-5bac-47bd-a5d2-f6540d904598",
+      "name": "Send Email 2 (Day 2)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1344,
+        64
+      ],
+      "webhookId": "a91dd53a-2a43-4e2b-b2ad-3d01faa85286",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bHHSw0V23dNLDJiX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "id": "96f13066-bed9-4a35-ba99-635b8525a92f",
+      "name": "Wait 3 More Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1568,
+        64
+      ],
+      "webhookId": "1d53a106-52c9-4d67-9f45-bd9a935eb380"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert sales copywriter. Write a final breakup email for a lead who has not replied to 2 previous emails.\n\nLead details:\n- Name: {{ $json.name }}\n- Company: {{ $json.company }}\n- Service Interest: {{ $json.service }}\n\nEmail requirements:\n- Subject: closing the loop / last email\n- Body: VERY SHORT \u2014 3-4 sentences only\n- Tone: respectful, no pressure, leaves door open\n- Tell them this is the last email\n- Give them an easy out (reply 'not now' or 'not interested')\n- One final value statement\n- Make them feel like they are losing something by not replying\n\nRespond with valid JSON only. No markdown, no backticks:\n{\n  \"subject\": \"email subject line\",\n  \"body\": \"full email body\"\n}"
+      },
+      "id": "e0624965-0263-478c-b393-625125535b88",
+      "name": "Generate Email 3",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        1776,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "id": "a156a0b4-3a83-4a93-bcfc-f6c199ac44db",
+      "name": "Groq Chat Model 3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1776,
+        224
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "11jBacWPd3zwjyHg",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let raw = $input.item.json.text || $input.item.json.output || '';\n\nraw = raw\n  .replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, '')\n  .replace(/\\\\n/g, '\\n')\n  .replace(/\\\\t/g, ' ')\n  .replace(/```json|```/g, '')\n  .trim();\n\ntry {\n  const parsed = JSON.parse(raw);\n  const lead = $('Parse Lead Data').item.json;\n  return [{ json: { \n    ...lead, \n    subject: parsed.subject || '',\n    body: parsed.body || ''\n  }}];\n} catch(e) {\n  const subjectMatch = raw.match(/\"subject\"\\s*:\\s*\"([^\"]+)\"/);\n  const bodyMatch = raw.match(/\"body\"\\s*:\\s*\"([\\s\\S]+?)\"\\s*\\}/);\n  const lead = $('Parse Lead Data').item.json;\n  return [{ json: {\n    ...lead,\n    subject: subjectMatch ? subjectMatch[1] : 'Last email from us',\n    body: bodyMatch ? bodyMatch[1].replace(/\\\\n/g, '\\n') : raw\n  }}];\n}"
+      },
+      "id": "533e12d9-24db-4fe7-b473-19ae7e48b068",
+      "name": "Parse Email 3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2128,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "replyTo": "hasheralwara@gmail.com"
+        }
+      },
+      "id": "927e5ef3-e126-4bbc-a385-bdd42493f990",
+      "name": "Send Email 3 (Day 5)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2352,
+        64
+      ],
+      "webhookId": "ad90a71d-9268-4797-b356-de684a9966af",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bHHSw0V23dNLDJiX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#all-wara",
+          "mode": "name"
+        },
+        "text": "=*New lead completed 3-email sequence*\n\n*Name:* {{ $json.name }}\n*Email:* {{ $json.email }}\n*Company:* {{ $json.company }}\n*Interest:* {{ $json.service }}\n*Status:* Sequence complete \u2014 no reply\n\n_Consider manual outreach or mark as cold_",
+        "otherOptions": {}
+      },
+      "id": "b95c48cd-1b61-4cab-9216-df52516acfdb",
+      "name": "Notify Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        2528,
+        336
+      ],
+      "webhookId": "83e0a48a-279a-4698-969a-bf1dfa9f05e2",
+      "credentials": {
+        "slackApi": {
+          "id": "iKF2XiBQQvOeNduo",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Lead captured and sequence started', leadId: $json.leadId }) }}",
+        "options": {}
+      },
+      "id": "c1a8443d-94a5-4371-b253-b9ec804092ce",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1XRstQU5SI2ZwQLog6zMHAsjSGc9OIBLnU0q6mW1eD84",
+          "mode": "list",
+          "cachedResultName": "Lead Follow-Up",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XRstQU5SI2ZwQLog6zMHAsjSGc9OIBLnU0q6mW1eD84/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XRstQU5SI2ZwQLog6zMHAsjSGc9OIBLnU0q6mW1eD84/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Parse Email 3').item.json.email }}",
+            "Lead ID": "={{ $('Parse Email 3').item.json.leadId }}",
+            "Name": "={{ $('Parse Email 3').item.json.name }}",
+            "Company": "={{ $('Parse Email 3').item.json.company }}",
+            "Service Interest": "={{ $('Parse Email 3').item.json.service }}",
+            "Source": "={{ $('Parse Email 3').item.json.source }}",
+            "Status": "Sequence Complete",
+            "Email 1 Sent": "Yes",
+            "Email 2 Sent": "Yes",
+            "Email 3 Sent": "Yes",
+            "Created At": "={{ $('Parse Email 3').item.json.createdAt }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Service Interest",
+              "displayName": "Service Interest",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email 1 Sent",
+              "displayName": "Email 1 Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email 2 Sent",
+              "displayName": "Email 2 Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email 3 Sent",
+              "displayName": "Email 3 Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "fbb494e4-1eea-45f8-94a3-241d03bf9dd9",
+      "name": "Mark Sequence Complete1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        2656,
+        32
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "New Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Lead Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Lead Data": {
+      "main": [
+        [
+          {
+            "node": "Save Lead to Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate Email 1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Email 1": {
+      "main": [
+        [
+          {
+            "node": "Parse Email 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Email 1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Email 1": {
+      "main": [
+        [
+          {
+            "node": "Send Email 1 (Immediate)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email 1 (Immediate)": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 Days": {
+      "main": [
+        [
+          {
+            "node": "Generate Email 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Email 2": {
+      "main": [
+        [
+          {
+            "node": "Parse Email 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model 2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Email 2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Email 2": {
+      "main": [
+        [
+          {
+            "node": "Send Email 2 (Day 2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email 2 (Day 2)": {
+      "main": [
+        [
+          {
+            "node": "Wait 3 More Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 More Days": {
+      "main": [
+        [
+          {
+            "node": "Generate Email 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Email 3": {
+      "main": [
+        [
+          {
+            "node": "Parse Email 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model 3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Email 3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Email 3": {
+      "main": [
+        [
+          {
+            "node": "Send Email 3 (Day 5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email 3 (Day 5)": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mark Sequence Complete1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "34d7a49f-9975-4d13-8ddd-34e0826dd4df",
+  "activeVersionId": null,
+  "versionCounter": 129,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-05-22T21:58:24.555Z",
+      "createdAt": "2026-05-22T21:58:24.555Z",
+      "role": "workflow:owner",
+      "workflowId": "GciPfH8zKPU5kU32",
+      "projectId": "Iq1L14HqUAHCPUBu",
+      "project": {
+        "updatedAt": "2026-05-22T10:44:17.180Z",
+        "createdAt": "2026-05-22T10:43:17.263Z",
+        "id": "Iq1L14HqUAHCPUBu",
+        "name": "Hashir Wara <hasheralwara@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ee0472ac-5224-40b4-a822-f71f776399c1"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

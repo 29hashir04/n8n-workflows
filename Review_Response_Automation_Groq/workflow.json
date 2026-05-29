@@ -1,0 +1,372 @@
+{
+  "updatedAt": "2026-05-22T15:01:05.882Z",
+  "createdAt": "2026-05-22T11:10:21.340Z",
+  "id": "nC5skm7EfEikXBHL",
+  "name": "Review Response Automation (Groq)",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new-review",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "379e1057-01ce-40ce-9eba-3e05e16247e2",
+      "name": "New Review Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        128
+      ],
+      "webhookId": "review-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.item.json.body || $input.item.json;\nconst reviewText = body.review_text || body.reviewText || body.review || '';\nconst rating = parseInt(body.rating || body.stars || 3);\nconst reviewerName = body.reviewer_name || body.name || 'Customer';\nconst platform = body.platform || 'Google';\n\nlet sentiment = 'neutral';\nif (rating >= 4) sentiment = 'positive';\nif (rating <= 2) sentiment = 'negative';\n\nreturn [{ json: { reviewText, rating, reviewerName, platform, sentiment } }];"
+      },
+      "id": "2a5a1fc1-ccc2-46db-ac7c-80da1880cfe3",
+      "name": "Parse Review Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -656,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional customer relations manager. Write a response to this {{ $json.platform }} review.\n\nReviewer: {{ $json.reviewerName }}\nRating: {{ $json.rating }}/5 stars\nSentiment: {{ $json.sentiment }}\nReview: {{ $json.reviewText }}\n\nGuidelines:\n- For positive reviews (4-5 stars): Be warm, grateful, personal. Mention something specific from their review.\n- For neutral reviews (3 stars): Thank them, acknowledge feedback, show commitment to improvement.\n- For negative reviews (1-2 stars): Be empathetic, apologize sincerely, offer to resolve offline. Never be defensive.\n- Keep response under 100 words\n- Sound human, not corporate\n- End with invitation to return or contact us\n\nRespond with valid JSON only. No markdown, no backticks:\n{\n  \"response\": \"the full response text\",\n  \"tone\": \"positive|neutral|empathetic\",\n  \"needs_followup\": true or false\n}"
+      },
+      "id": "d9de1849-e4d5-4afb-9a7a-008310af9f52",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -496,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let raw = $input.item.json.text || $input.item.json.output || $input.item.json.response || '';\nraw = raw.replace(/\\\\n/g, '\\n').replace(/\\\\'/g, '\"');\ntry {\n  const cleaned = raw.replace(/```json|```/g, '').trim();\n  const parsed = JSON.parse(cleaned);\n  const review = {\n    reviewText: $('Parse Review Data').item.json.reviewText,\n    rating: $('Parse Review Data').item.json.rating,\n    reviewerName: $('Parse Review Data').item.json.reviewerName,\n    platform: $('Parse Review Data').item.json.platform,\n    sentiment: $('Parse Review Data').item.json.sentiment\n  };\n  return [{ json: { ...parsed, ...review } }];\n} catch(e) {\n  return [{ json: { error: e.message, raw: raw.substring(0, 200) } }];\n}"
+      },
+      "id": "89b7bc05-fed6-4945-bf8c-8c5a3beabaa4",
+      "name": "Parse Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fqh13RFkCe9v6etibdaWNv73JveokQW5Vye3arvyyUI",
+          "mode": "list",
+          "cachedResultName": "Review Response",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fqh13RFkCe9v6etibdaWNv73JveokQW5Vye3arvyyUI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fqh13RFkCe9v6etibdaWNv73JveokQW5Vye3arvyyUI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Reviewer": "={{ $json.reviewerName }}",
+            "Platform": "={{ $json.platform }}",
+            "Rating": "={{ $json.rating }}",
+            "Review": "={{ $json.reviewText }}",
+            "Drafted Response": "={{ $json.response }}",
+            "Tone": "={{ $json.tone }}",
+            "Needs Followup": "={{ $json.needs_followup }}",
+            "Status": "Pending Approval",
+            "Date": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "Reviewer"
+          ],
+          "schema": [
+            {
+              "id": "Reviewer",
+              "displayName": "Reviewer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Platform",
+              "displayName": "Platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Review",
+              "displayName": "Review",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Drafted Response",
+              "displayName": "Drafted Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tone",
+              "displayName": "Tone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Needs Followup",
+              "displayName": "Needs Followup",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "e4929fd6-cedd-4ad2-9812-0669c2d074f8",
+      "name": "Save to Reviews Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#all-wara",
+          "mode": "name"
+        },
+        "text": "={{ ($json.rating >= 4 ? '\u2b50\u2b50\u2b50\u2b50\u2b50' : $json.rating === 3 ? '\u2b50\u2b50\u2b50' : '\u2b50') + ' *New ' + $json.platform + ' Review \u2014 ' + $json.rating + '/5 stars*\\n\\n*From:* ' + $json.reviewerName + '\\n*Review:* ' + $json.reviewText + '\\n\\n---\\n*\u270d\ufe0f Drafted Response:*\\n' + $json.response + '\\n\\n' + ($json.needs_followup ? '\u26a0\ufe0f *Needs personal followup*' : '\u2705 Ready to post') + '\\n\\n_Approve and post, or edit in Google Sheets_' }}",
+        "otherOptions": {}
+      },
+      "id": "67370bb3-128d-4562-86f2-965f10355ac0",
+      "name": "Send to Slack for Approval",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        240
+      ],
+      "webhookId": "5a499ee6-62db-4178-93e6-c72d24bb24e0",
+      "credentials": {
+        "slackApi": {
+          "id": "iKF2XiBQQvOeNduo",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Review received and response drafted' }) }}",
+        "options": {}
+      },
+      "id": "8d75574b-4111-489c-8355-797e8b8228f8",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        336
+      ],
+      "id": "507e374c-bbb4-48b6-bab7-a40077ee97b0",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "11jBacWPd3zwjyHg",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "New Review Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Review Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Review Data": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Parse Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Response": {
+      "main": [
+        [
+          {
+            "node": "Save to Reviews Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send to Slack for Approval",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a37ef9cd-f571-400a-aae4-34451b2ba1bd",
+  "activeVersionId": null,
+  "versionCounter": 22,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-05-22T11:10:21.346Z",
+      "createdAt": "2026-05-22T11:10:21.346Z",
+      "role": "workflow:owner",
+      "workflowId": "nC5skm7EfEikXBHL",
+      "projectId": "Iq1L14HqUAHCPUBu",
+      "project": {
+        "updatedAt": "2026-05-22T10:44:17.180Z",
+        "createdAt": "2026-05-22T10:43:17.263Z",
+        "id": "Iq1L14HqUAHCPUBu",
+        "name": "Hashir Wara <hasheralwara@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ee0472ac-5224-40b4-a822-f71f776399c1"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

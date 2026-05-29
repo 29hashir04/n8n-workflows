@@ -1,0 +1,454 @@
+{
+  "updatedAt": "2026-05-22T22:09:22.352Z",
+  "createdAt": "2026-05-22T22:07:56.121Z",
+  "id": "ixARGwhTYrSLCQYD",
+  "name": "Doctor Clinic Appointment Booking System",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "book-appointment",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c7036696-ef81-4329-8cdb-379609a0fc6a",
+      "name": "New Appointment Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        176
+      ],
+      "webhookId": "appointment-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.item.json.body || $input.item.json;\n\nconst patientName = body.patient_name || body.name || '';\nconst patientEmail = body.patient_email || body.email || '';\nconst patientPhone = body.patient_phone || body.phone || '';\nconst doctorName = body.doctor_name || body.doctor || 'Dr. Smith';\nconst appointmentDate = body.appointment_date || body.date || '';\nconst appointmentTime = body.appointment_time || body.time || '';\nconst appointmentType = body.appointment_type || body.type || 'General Consultation';\nconst notes = body.notes || body.reason || '';\n\nif (!patientEmail || !appointmentDate || !appointmentTime) {\n  return [{ json: { error: 'Missing required fields: email, date, or time' } }];\n}\n\nconst bookingId = 'APT-' + Date.now();\nconst dateTimeStr = appointmentDate + 'T' + appointmentTime + ':00';\nconst startDateTime = new Date(dateTimeStr).toISOString();\nconst endDateTime = new Date(new Date(dateTimeStr).getTime() + 30 * 60000).toISOString();\n\nreturn [{ json: {\n  patientName,\n  patientEmail,\n  patientPhone,\n  doctorName,\n  appointmentDate,\n  appointmentTime,\n  appointmentType,\n  notes,\n  bookingId,\n  startDateTime,\n  endDateTime,\n  createdAt: new Date().toISOString()\n}}];"
+      },
+      "id": "c9297a0a-eb3d-4092-a624-51a3ade89dc7",
+      "name": "Parse Booking Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "mode": "list",
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "mode": "list",
+          "__rl": true,
+          "value": "gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Booking ID": "={{ $json.bookingId }}",
+            "Patient Name": "={{ $json.patientName }}",
+            "Patient Email": "={{ $json.patientEmail }}",
+            "Patient Phone": "={{ $json.patientPhone }}",
+            "Doctor": "={{ $json.doctorName }}",
+            "Date": "={{ $json.appointmentDate }}",
+            "Time": "={{ $json.appointmentTime }}",
+            "Type": "={{ $json.appointmentType }}",
+            "Notes": "={{ $json.notes }}",
+            "Status": "Confirmed",
+            "Created At": "={{ $json.createdAt }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "48a3ef7c-9f6e-4208-94f9-b76cb5724eac",
+      "name": "Save to Appointments Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -144,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "mode": "list",
+          "__rl": true,
+          "value": "YOUR_GOOGLE_CALENDAR_ID"
+        },
+        "start": "={{ $json.startDateTime }}",
+        "end": "={{ $json.endDateTime }}",
+        "additionalFields": {
+          "attendees": [
+            {
+              "email": "={{ $json.patientEmail }}"
+            }
+          ],
+          "description": "=Patient: {{ $json.patientName }}\nEmail: {{ $json.patientEmail }}\nPhone: {{ $json.patientPhone }}\nType: {{ $json.appointmentType }}\nBooking ID: {{ $json.bookingId }}\nNotes: {{ $json.notes }}",
+          "location": "Clinic \u2014 Room 1",
+          "sendUpdates": "all",
+          "summary": "={{ $json.appointmentType }} \u2014 {{ $json.patientName }}"
+        }
+      },
+      "id": "6ab3b118-c7b5-4a42-8669-64d17add6275",
+      "name": "Add to Google Calendar",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional medical clinic assistant. Write a warm, reassuring appointment confirmation email.\n\nAppointment details:\n- Patient Name: {{ $json.patientName }}\n- Doctor: {{ $json.doctorName }}\n- Date: {{ $json.appointmentDate }}\n- Time: {{ $json.appointmentTime }}\n- Type: {{ $json.appointmentType }}\n- Booking ID: {{ $json.bookingId }}\n- Notes: {{ $json.notes }}\n\nEmail requirements:\n- Subject: clear confirmation with date and time\n- Tone: warm, professional, reassuring\n- Include all appointment details clearly\n- What to bring: ID, insurance card, arrive 10 mins early\n- Cancellation policy: cancel 24hrs before\n- Clinic contact details placeholder: [CLINIC_PHONE] and [CLINIC_ADDRESS]\n- Friendly closing\n\nRespond with valid JSON only. No markdown, no backticks:\n{\n  \"subject\": \"email subject\",\n  \"body\": \"full email body with line breaks as \\n\"\n}"
+      },
+      "id": "dc485b9d-3efa-44e0-8979-f41271320985",
+      "name": "Generate Confirmation Email",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -208,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "id": "1e6ebb6b-3d7c-49d2-b2b8-01672430be89",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let raw = $input.item.json.text || $input.item.json.output || '';\nraw = raw.replace(/```json|```/g, '').trim();\ntry {\n  const parsed = JSON.parse(raw);\n  const booking = $('Parse Booking Data').item.json;\n  return [{ json: { ...booking, subject: parsed.subject, body: parsed.body } }];\n} catch(e) {\n  return [{ json: { error: e.message, raw } }];\n}"
+      },
+      "id": "2a9c0170-ec32-4613-8ce1-54c09919f19f",
+      "name": "Parse Confirmation Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.patientEmail }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "replyTo": "clinic@yourdomain.com"
+        }
+      },
+      "id": "ea745b0f-f7fc-47d2-9406-9adf2637fe37",
+      "name": "Send Confirmation to Patient",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        384,
+        432
+      ],
+      "webhookId": "1a58a699-ef3c-4d45-94f6-2c7dd22686fc"
+    },
+    {
+      "parameters": {
+        "sendTo": "doctor@yourclinic.com",
+        "subject": "=New Appointment: {{ $json.patientName }} \u2014 {{ $json.appointmentDate }} at {{ $json.appointmentTime }}",
+        "emailType": "text",
+        "message": "=New appointment booked.\n\nPatient: {{ $json.patientName }}\nEmail: {{ $json.patientEmail }}\nPhone: {{ $json.patientPhone }}\nDate: {{ $json.appointmentDate }}\nTime: {{ $json.appointmentTime }}\nType: {{ $json.appointmentType }}\nBooking ID: {{ $json.bookingId }}\nNotes: {{ $json.notes }}\n\nAdded to Google Calendar automatically.",
+        "options": {}
+      },
+      "id": "f0768cf0-318b-4264-b668-fc401115f7b8",
+      "name": "Notify Doctor",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        -128
+      ],
+      "webhookId": "c2c04f90-7cc1-4049-8787-118b391c631c"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "a2828bbb-c95d-4a0c-bd62-d767cc24480e",
+      "name": "Daily Reminder Check (8AM)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "getAll",
+        "documentId": {
+          "mode": "list",
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        }
+      },
+      "id": "77576ab7-80ec-4fec-87dc-c8d15a4df72f",
+      "name": "Get Confirmed Appointments",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -32,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const appointments = $input.all();\nconst tomorrow = new Date();\ntomorrow.setDate(tomorrow.getDate() + 1);\nconst tomorrowStr = tomorrow.toISOString().split('T')[0];\n\nconst tomorrowAppts = appointments.filter(item => {\n  const apptDate = item.json['Date'] || '';\n  return apptDate === tomorrowStr;\n});\n\nreturn tomorrowAppts.map(item => ({ json: item.json }));"
+      },
+      "id": "7c706415-ab12-45bf-b295-8e970f6c863f",
+      "name": "Filter Tomorrows Appointments",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Patient Email'] }}",
+        "subject": "=Reminder: Your appointment tomorrow at {{ $json['Time'] }}",
+        "emailType": "text",
+        "message": "=Dear {{ $json['Patient Name'] }},\n\nThis is a friendly reminder that you have an appointment scheduled for tomorrow.\n\nAppointment Details:\n- Doctor: {{ $json['Doctor'] }}\n- Date: {{ $json['Date'] }}\n- Time: {{ $json['Time'] }}\n- Type: {{ $json['Type'] }}\n- Booking ID: {{ $json['Booking ID'] }}\n\nPlease remember to:\n- Arrive 10 minutes early\n- Bring a valid photo ID\n- Bring your insurance card if applicable\n\nNeed to cancel or reschedule? Please contact us at least 24 hours in advance at [CLINIC_PHONE].\n\nWe look forward to seeing you!\n\nWarm regards,\nThe Clinic Team\n[CLINIC_ADDRESS]",
+        "options": {}
+      },
+      "id": "44aaa55a-5908-4125-9182-aa1b1769fc15",
+      "name": "Send Reminder Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        768
+      ],
+      "webhookId": "17342772-e077-4589-af50-5189b7ccbaec"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "mode": "list",
+          "__rl": true,
+          "value": "YOUR_SLACK_CHANNEL_ID"
+        },
+        "text": "=*New Appointment Booked*\n\n*Patient:* {{ $json.patientName }}\n*Doctor:* {{ $json.doctorName }}\n*Date:* {{ $json.appointmentDate }} at {{ $json.appointmentTime }}\n*Type:* {{ $json.appointmentType }}\n*Booking ID:* {{ $json.bookingId }}\n\n_Confirmation sent to patient. Added to Google Calendar._",
+        "otherOptions": {}
+      },
+      "id": "483694e5-480c-42b5-9263-6dc27c2f5972",
+      "name": "Notify Clinic on Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        208
+      ],
+      "webhookId": "b19fbcdf-8188-4ab8-a432-0b9ff32c8348"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, bookingId: $json.bookingId, message: 'Appointment confirmed! Check your email for details.' }) }}",
+        "options": {}
+      },
+      "id": "0c445d12-6f2e-4842-bd59-238b50fcbae3",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        464,
+        48
+      ]
+    }
+  ],
+  "connections": {
+    "New Appointment Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Booking Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Booking Data": {
+      "main": [
+        [
+          {
+            "node": "Save to Appointments Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Add to Google Calendar",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate Confirmation Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Doctor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to Google Calendar": {
+      "main": [
+        [
+          {
+            "node": "Notify Clinic on Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Confirmation Email": {
+      "main": [
+        [
+          {
+            "node": "Parse Confirmation Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Confirmation Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Confirmation Email": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation to Patient",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Reminder Check (8AM)": {
+      "main": [
+        [
+          {
+            "node": "Get Confirmed Appointments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Confirmed Appointments": {
+      "main": [
+        [
+          {
+            "node": "Filter Tomorrows Appointments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Tomorrows Appointments": {
+      "main": [
+        [
+          {
+            "node": "Send Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "fdfc0e5b-7add-470f-97e5-96b6b759f74e",
+  "activeVersionId": null,
+  "versionCounter": 21,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-05-22T22:07:56.127Z",
+      "createdAt": "2026-05-22T22:07:56.127Z",
+      "role": "workflow:owner",
+      "workflowId": "ixARGwhTYrSLCQYD",
+      "projectId": "Iq1L14HqUAHCPUBu",
+      "project": {
+        "updatedAt": "2026-05-22T10:44:17.180Z",
+        "createdAt": "2026-05-22T10:43:17.263Z",
+        "id": "Iq1L14HqUAHCPUBu",
+        "name": "Hashir Wara <hasheralwara@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ee0472ac-5224-40b4-a822-f71f776399c1"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}
