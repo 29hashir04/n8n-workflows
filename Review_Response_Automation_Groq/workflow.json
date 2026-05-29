@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-05-22T15:01:05.882Z",
   "createdAt": "2026-05-22T11:10:21.340Z",
-  "id": "nC5skm7EfEikXBHL",
+  "id": "WORKFLOW_ID",
   "name": "Review Response Automation (Groq)",
   "description": null,
   "active": false,
@@ -69,17 +69,17 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "1fqh13RFkCe9v6etibdaWNv73JveokQW5Vye3arvyyUI",
+          "value": "YOUR_GOOGLE_SHEET_ID",
           "mode": "list",
           "cachedResultName": "Review Response",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fqh13RFkCe9v6etibdaWNv73JveokQW5Vye3arvyyUI/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1fqh13RFkCe9v6etibdaWNv73JveokQW5Vye3arvyyUI/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -197,7 +197,7 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "6YAT3reKAdbtnQP4",
+          "id": "YOUR_GOOGLE_SHEETS_CREDENTIAL_ID",
           "name": "Google Sheets account"
         }
       }
@@ -224,7 +224,7 @@
       "webhookId": "5a499ee6-62db-4178-93e6-c72d24bb24e0",
       "credentials": {
         "slackApi": {
-          "id": "iKF2XiBQQvOeNduo",
+          "id": "YOUR_SLACK_CREDENTIAL_ID",
           "name": "Slack account"
         }
       }
@@ -259,7 +259,7 @@
       "name": "Groq Chat Model",
       "credentials": {
         "groqApi": {
-          "id": "11jBacWPd3zwjyHg",
+          "id": "YOUR_GROQ_CREDENTIAL_ID",
           "name": "Groq account"
         }
       }
@@ -351,7 +351,7 @@
       "updatedAt": "2026-05-22T11:10:21.346Z",
       "createdAt": "2026-05-22T11:10:21.346Z",
       "role": "workflow:owner",
-      "workflowId": "nC5skm7EfEikXBHL",
+      "workflowId": "WORKFLOW_ID",
       "projectId": "Iq1L14HqUAHCPUBu",
       "project": {
         "updatedAt": "2026-05-22T10:44:17.180Z",
