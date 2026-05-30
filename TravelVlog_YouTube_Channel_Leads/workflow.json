@@ -1,0 +1,411 @@
+{
+  "updatedAt": "2026-05-29T23:06:43.629Z",
+  "createdAt": "2026-05-29T22:13:57.045Z",
+  "id": "gf5PK7DphxFOIWr2",
+  "name": "#TravelVlog YouTube Channel Leads",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "id": "ca00d0fe-e617-4cb3-afe5-964b7ccb3169",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet"
+            },
+            {
+              "name": "q",
+              "value": "travelvlog"
+            },
+            {
+              "name": "type",
+              "value": "channel"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyB4d_j-GDV9hJcQrvZ32dWAN59vID7_7zs"
+            },
+            {
+              "name": "relevanceLanguage",
+              "value": "en"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c9e4f8a5-02c6-456d-81ca-8a7eb23bc705",
+      "name": "Search YouTube Channels",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        224,
+        0
+      ],
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\nfor (const item of $input.all()) {\n  const data = item.json;\n  const items = data.items || data.body?.items || [];\n  \n  if (items.length === 0) continue;\n\n  const channelIds = items\n    .map(i => i.id?.channelId || i.snippet?.channelId || i.id)\n    .filter(Boolean);\n\n  if (channelIds.length > 0) {\n    results.push({ json: { channelIds: channelIds.join(','), count: channelIds.length } });\n  }\n}\n\nreturn results;"
+      },
+      "id": "b56e17b8-668b-4f4c-9d92-07a022a3a07f",
+      "name": "Extract Channel IDs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/channels",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,statistics"
+            },
+            {
+              "name": "id",
+              "value": "={{ $json.channelIds }}"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyB4d_j-GDV9hJcQrvZ32dWAN59vID7_7zs"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "286adaca-2a81-4662-bc1a-543d5cc3a061",
+      "name": "Get Channel Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst channels = response.items || [];\n\nconst HIGH_PAYING = ['US', 'GB', 'CA', 'AU', 'NZ', 'DE', 'FR', 'NL', 'SE', 'NO', 'DK', 'FI', 'CH', 'AT', 'BE', 'IE', 'SG', 'AE', 'JP', 'KR'];\n\nconst COUNTRY_NAMES = {\n  US: 'United States', GB: 'United Kingdom', CA: 'Canada', AU: 'Australia',\n  NZ: 'New Zealand', DE: 'Germany', FR: 'France', NL: 'Netherlands',\n  SE: 'Sweden', NO: 'Norway', DK: 'Denmark', FI: 'Finland',\n  CH: 'Switzerland', AT: 'Austria', BE: 'Belgium', IE: 'Ireland',\n  SG: 'Singapore', AE: 'UAE', JP: 'Japan', KR: 'South Korea'\n};\n\nconst formatSubs = (n) => {\n  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';\n  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';\n  return n.toString();\n};\n\nconst results = [];\n\nfor (const item of $input.all()) {\n  const channels = item.json.items || [];\n\n  channels\n    .filter(ch => {\n      const subs = parseInt(ch.statistics?.subscriberCount || 0);\n      const country = ch.snippet?.country || '';\n      // Keep if high paying country OR country not set\n      return subs >= 5000 && subs <= 500000 && \n             (HIGH_PAYING.includes(country) || country === '');\n    })\n    .forEach(ch => {\n      const subs = parseInt(ch.statistics?.subscriberCount || 0);\n      const videoCount = parseInt(ch.statistics?.videoCount || 0);\n      const desc = ch.snippet?.description || '';\n      const emailMatch = desc.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/);\n      const thumbnailUrl = ch.snippet?.thumbnails?.high?.url ||\n                           ch.snippet?.thumbnails?.medium?.url ||\n                           ch.snippet?.thumbnails?.default?.url || '';\n      const photo = thumbnailUrl\n        ? '=IMAGE(' + JSON.stringify(thumbnailUrl) + ', 1)'\n        : '';\n      const countryCode = ch.snippet?.country || '';\n      const countryName = COUNTRY_NAMES[countryCode] || (countryCode ? countryCode : 'Not Set');\n\n      results.push({\n        json: {\n          photo: photo,\n          channelName: ch.snippet?.title || '',\n          handle: ch.snippet?.customUrl || '',\n          subscribers: formatSubs(subs),\n          totalVideos: videoCount.toString(),\n          country: countryName,\n          email: emailMatch ? emailMatch[0] : 'not found',\n          channelUrl: 'https://www.youtube.com/channel/' + ch.id,\n          channelId: ch.id,\n          status: 'new',\n          scrapedDate: new Date().toISOString().split('T')[0]\n        }\n      });\n    });\n}\n// Remove duplicates within same run\nconst seen = new Set();\nconst unique = results.filter(r => {\n  if (seen.has(r.json.channelId)) return false;\n  seen.add(r.json.channelId);\n  return true;\n});\n\nreturn unique;\nreturn results;"
+      },
+      "id": "2bb43925-b0ee-4e6f-9c4e-babb557d8e37",
+      "name": "Filter and Format",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "10grh-uKT9S54qfP4iaoPr2DiJaZWyQR2zTFJX8kuEBg",
+          "mode": "list",
+          "cachedResultName": "n8n travel data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10grh-uKT9S54qfP4iaoPr2DiJaZWyQR2zTFJX8kuEBg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10grh-uKT9S54qfP4iaoPr2DiJaZWyQR2zTFJX8kuEBg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Photo": "={{ $json.photo }}",
+            "Channel Name": "={{ $json.channelName }}",
+            "Handle": "={{ $json.handle }}",
+            "Subscribers": "={{ $json.subscribers }}",
+            "Country": "={{ $json.country }}",
+            "Status": "={{ $json.status }}",
+            "Scraped Date": "={{ $json.scrapedDate }}",
+            "Channel ID": "={{ $json.channelId }}",
+            "Channel URL": "={{ $json.channelUrl }}",
+            "Business Email": "={{ $json.email }}",
+            "Total Videos": "={{ $json.totalVideos }}"
+          },
+          "matchingColumns": [
+            "Channel ID"
+          ],
+          "schema": [
+            {
+              "id": "Photo",
+              "displayName": "Photo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Channel Name",
+              "displayName": "Channel Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Handle",
+              "displayName": "Handle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subscribers",
+              "displayName": "Subscribers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Videos",
+              "displayName": "Total Videos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Business Email",
+              "displayName": "Business Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Channel URL",
+              "displayName": "Channel URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Channel ID",
+              "displayName": "Channel ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Scraped Date",
+              "displayName": "Scraped Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "5f5903bf-7595-4ea3-9e1e-a2481a112d62",
+      "name": "Append to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const niches = [\n  'travel vlog',\n  'solo travel',\n  'budget travel',\n  'backpacking',\n  'van life',\n  'travel couple',\n  'family travel',\n  'luxury travel',\n  'adventure travel',\n  'digital nomad',\n  'world world',\n  'travel tips',\n  'road trip vlog',\n  'travel documentary',\n  'expat life',\n  'slow travel',\n  'travel filmmaker',\n  'sailing vlog',\n  'motorcycle travel',\n  'hiking vlog'\n];\n\nreturn niches.map(niche => ({ json: { query: niche } }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        32,
+        16
+      ],
+      "id": "fe3b1125-8b22-4008-9368-1a75619fe34d",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search YouTube Channels": {
+      "main": [
+        [
+          {
+            "node": "Extract Channel IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Channel IDs": {
+      "main": [
+        [
+          {
+            "node": "Get Channel Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Channel Details": {
+      "main": [
+        [
+          {
+            "node": "Filter and Format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter and Format": {
+      "main": [
+        [
+          {
+            "node": "Append to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append to Google Sheets": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Search YouTube Channels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "446505b6-8426-4a0e-aaff-98374f2a0a06",
+  "activeVersionId": null,
+  "versionCounter": 60,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-05-29T22:13:57.063Z",
+      "createdAt": "2026-05-29T22:13:57.063Z",
+      "role": "workflow:owner",
+      "workflowId": "gf5PK7DphxFOIWr2",
+      "projectId": "Iq1L14HqUAHCPUBu",
+      "project": {
+        "updatedAt": "2026-05-22T10:44:17.180Z",
+        "createdAt": "2026-05-22T10:43:17.263Z",
+        "id": "Iq1L14HqUAHCPUBu",
+        "name": "Hashir Wara <hasheralwara@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ee0472ac-5224-40b4-a822-f71f776399c1"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

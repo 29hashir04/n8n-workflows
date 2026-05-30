@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-05-25T14:15:44.772Z",
   "createdAt": "2026-05-22T11:10:39.246Z",
-  "id": "WORKFLOW_ID",
+  "id": "yyrq7QlAdNuEYzbm",
   "name": "Support Ticket Triage",
   "description": null,
   "active": false,
@@ -30,7 +30,7 @@
       ],
       "credentials": {
         "gmailOAuth2": {
-          "id": "YOUR_GMAIL_CREDENTIAL_ID",
+          "id": "bHHSw0V23dNLDJiX",
           "name": "Gmail account"
         }
       }
@@ -66,10 +66,10 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "YOUR_GOOGLE_SHEET_ID",
+          "value": "1A6DLKFhFYmPqgS_lfTnKhLIusTAe_Rbp32S5mbIeUhM",
           "mode": "list",
           "cachedResultName": "Support Ticket Triage",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1A6DLKFhFYmPqgS_lfTnKhLIusTAe_Rbp32S5mbIeUhM/edit?usp=drivesdk"
         },
         "sheetName": {
           "mode": "list",
@@ -228,7 +228,7 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "YOUR_GOOGLE_SHEETS_CREDENTIAL_ID",
+          "id": "6YAT3reKAdbtnQP4",
           "name": "Google Sheets account"
         }
       }
@@ -255,7 +255,7 @@
       "webhookId": "f5ee7035-f0b7-42e1-8abc-a76c94637602",
       "credentials": {
         "slackApi": {
-          "id": "YOUR_SLACK_CREDENTIAL_ID",
+          "id": "iKF2XiBQQvOeNduo",
           "name": "Slack account"
         }
       }
@@ -311,7 +311,7 @@
       "webhookId": "5c19d774-db40-40c2-b10a-f2e6fd6677e1",
       "credentials": {
         "gmailOAuth2": {
-          "id": "YOUR_GMAIL_CREDENTIAL_ID",
+          "id": "bHHSw0V23dNLDJiX",
           "name": "Gmail account"
         }
       }
@@ -331,7 +331,7 @@
       "name": "Groq Chat Model",
       "credentials": {
         "groqApi": {
-          "id": "YOUR_GROQ_CREDENTIAL_ID",
+          "id": "11jBacWPd3zwjyHg",
           "name": "Groq account"
         }
       }
@@ -449,7 +449,7 @@
       "updatedAt": "2026-05-22T11:10:39.254Z",
       "createdAt": "2026-05-22T11:10:39.254Z",
       "role": "workflow:owner",
-      "workflowId": "WORKFLOW_ID",
+      "workflowId": "yyrq7QlAdNuEYzbm",
       "projectId": "Iq1L14HqUAHCPUBu",
       "project": {
         "updatedAt": "2026-05-22T10:44:17.180Z",

@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-05-22T14:30:58.255Z",
   "createdAt": "2026-05-22T11:08:47.890Z",
-  "id": "WORKFLOW_ID",
+  "id": "ESH0QWWQmeioxP7Q",
   "name": "Content Repurposing Pipeline (Groq)",
   "description": null,
   "active": false,
@@ -11,17 +11,17 @@
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "YOUR_GOOGLE_SHEET_ID",
+          "value": "1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E",
           "mode": "list",
           "cachedResultName": "Content Repurposing Pipeline",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Blog Posts",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E/edit#gid=0"
         },
         "filtersUI": {
           "values": [
@@ -43,7 +43,7 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "YOUR_GOOGLE_SHEETS_CREDENTIAL_ID",
+          "id": "6YAT3reKAdbtnQP4",
           "name": "Google Sheets account"
         }
       }
@@ -53,17 +53,17 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "YOUR_GOOGLE_SHEET_ID",
+          "value": "1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E",
           "mode": "list",
           "cachedResultName": "Content Repurposing Pipeline",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": 1639480721,
           "mode": "list",
           "cachedResultName": "Repurposed Content",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1O5n6AhkPf_JI3OANtMrICFpyCOLZUhft2foeWv4AL2E/edit#gid=1639480721"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -188,7 +188,7 @@
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "YOUR_GOOGLE_SHEETS_CREDENTIAL_ID",
+          "id": "6YAT3reKAdbtnQP4",
           "name": "Google Sheets account"
         }
       }
@@ -215,7 +215,7 @@
       "webhookId": "2646719d-5b52-46da-92e6-3e6b6a11a793",
       "credentials": {
         "slackApi": {
-          "id": "YOUR_SLACK_CREDENTIAL_ID",
+          "id": "iKF2XiBQQvOeNduo",
           "name": "Slack account"
         }
       }
@@ -250,7 +250,7 @@
       "name": "Groq Chat Model",
       "credentials": {
         "groqApi": {
-          "id": "YOUR_GROQ_CREDENTIAL_ID",
+          "id": "11jBacWPd3zwjyHg",
           "name": "Groq account"
         }
       }
@@ -370,7 +370,7 @@
       "updatedAt": "2026-05-22T11:08:47.899Z",
       "createdAt": "2026-05-22T11:08:47.899Z",
       "role": "workflow:owner",
-      "workflowId": "WORKFLOW_ID",
+      "workflowId": "ESH0QWWQmeioxP7Q",
       "projectId": "Iq1L14HqUAHCPUBu",
       "project": {
         "updatedAt": "2026-05-22T10:44:17.180Z",
