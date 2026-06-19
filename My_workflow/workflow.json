@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-30T09:11:41.857Z",
+  "updatedAt": "2026-06-08T12:52:35.519Z",
   "createdAt": "2026-05-30T09:11:35.063Z",
   "id": "c08S9YIB19ebq3wi",
   "name": "My workflow",
@@ -13,11 +13,11 @@
         "height": 180,
         "width": 350
       },
-      "id": "b33100f9-f1d6-4796-b419-0cf15dcee697",
+      "id": "86a9f924-0aa1-4cfe-b252-514054acb288",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -1008,
-        48
+        240,
+        656
       ],
       "typeVersion": 1,
       "name": "Sticky Note"
@@ -28,11 +28,11 @@
         "height": 200,
         "width": 380
       },
-      "id": "f904ff07-d68a-489e-a630-6a0f2b0d397c",
+      "id": "ee68533f-a5a4-41a8-8b54-c7fee7eb2ba2",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -800,
-        16
+        448,
+        624
       ],
       "typeVersion": 1,
       "name": "Sticky Note1"
@@ -43,11 +43,11 @@
         "height": 200,
         "width": 380
       },
-      "id": "b3fa50cc-6096-42ec-a4c5-268b30841b5d",
+      "id": "fb0769d3-206c-484b-bbf8-5d6abcd44c6c",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -400,
-        16
+        848,
+        624
       ],
       "typeVersion": 1,
       "name": "Sticky Note2"
@@ -58,23 +58,23 @@
         "height": 220,
         "width": 400
       },
-      "id": "c0edf3d9-c88f-4bc1-8889-e966e1b02c8f",
+      "id": "99b001a9-b244-456a-9c28-ce3d56da36a2",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        0,
-        0
+        1248,
+        608
       ],
       "typeVersion": 1,
       "name": "Sticky Note3"
     },
     {
       "parameters": {},
-      "id": "a754623b-4094-4090-bd82-b71380f7b09c",
+      "id": "65c82413-394f-4d06-bb66-32c840f9efdc",
       "name": "When clicking \u2018Test workflow\u2019",
       "type": "n8n-nodes-base.manualTrigger",
       "position": [
-        -960,
-        336
+        288,
+        944
       ],
       "typeVersion": 1
     },
@@ -82,12 +82,12 @@
       "parameters": {
         "options": {}
       },
-      "id": "629717a1-2f59-4204-b23b-12ea1d565421",
+      "id": "01df967a-9513-41c0-87b2-d659fee97a09",
       "name": "Remove Duplicates",
       "type": "n8n-nodes-base.removeDuplicates",
       "position": [
-        -160,
-        336
+        1088,
+        944
       ],
       "typeVersion": 2
     },
@@ -95,12 +95,12 @@
       "parameters": {
         "options": {}
       },
-      "id": "1e6c50fe-2f03-40a9-9d37-65a7cadd53f3",
+      "id": "05530661-066d-41c1-89aa-c348d3404e1e",
       "name": "Loop Over Items",
       "type": "n8n-nodes-base.splitInBatches",
       "position": [
-        240,
-        336
+        1488,
+        944
       ],
       "typeVersion": 3
     },
@@ -108,12 +108,12 @@
       "parameters": {
         "amount": 1
       },
-      "id": "df998d2f-2c09-49e4-b908-37bb3d60e341",
+      "id": "ab5c8065-42a6-496a-878d-09b02b54688a",
       "name": "Wait",
       "type": "n8n-nodes-base.wait",
       "position": [
-        592,
-        432
+        1840,
+        1040
       ],
       "webhookId": "19cc6ed4-4fe7-485b-b879-c679e4b3374d",
       "typeVersion": 1.1
@@ -122,23 +122,25 @@
       "parameters": {
         "maxItems": 10
       },
-      "id": "6a0200bd-493a-44d5-babd-47aae845c4b5",
+      "id": "3abbfe4f-8c48-408e-86bd-e1f22c65c0be",
       "name": "Limit",
       "type": "n8n-nodes-base.limit",
       "position": [
-        16,
-        336
+        1264,
+        944
       ],
       "typeVersion": 1
     },
     {
-      "parameters": {},
-      "id": "39063530-7a0b-4334-82e0-0179084c94ca",
+      "parameters": {
+        "amount": 1
+      },
+      "id": "51795f2c-5ae6-46a6-8871-1bbaa4d7ad40",
       "name": "Wait1",
       "type": "n8n-nodes-base.wait",
       "position": [
-        416,
-        272
+        1664,
+        880
       ],
       "webhookId": "0fe34756-6e43-4603-8891-5747a9a6500a",
       "typeVersion": 1.1
@@ -148,25 +150,25 @@
         "fieldToSplitOut": "emails",
         "options": {}
       },
-      "id": "3e425492-ff1c-42e0-a1ce-0e197d8b7c98",
+      "id": "c6addf70-e5eb-494b-a787-840a55a8f5d8",
       "name": "Split Out",
       "type": "n8n-nodes-base.splitOut",
       "position": [
-        784,
-        272
+        2032,
+        880
       ],
       "typeVersion": 1
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json.data\nconst regex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.(?!jpeg|jpg|png|gif|webp|svg)[a-zA-Z]{2,}/g\nconst emails = input.match(regex)\nreturn {json: {emails:emails}}"
+        "jsCode": "const input = $input.first().json.data || '';\nconst regex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.(?!jpeg|jpg|png|gif|webp|svg)[a-zA-Z]{2,}/g;\nconst emails = input.match(regex) || [];\nreturn { json: { emails: emails } };"
       },
-      "id": "28ff7f03-eb55-49e3-8023-a668bc8d533b",
+      "id": "306bf09a-ea21-4b48-b266-62e507de3097",
       "name": "Extract Emails",
       "type": "n8n-nodes-base.code",
       "position": [
-        784,
-        432
+        2032,
+        1040
       ],
       "typeVersion": 2,
       "alwaysOutputData": true,
@@ -174,16 +176,18 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json.data\nconst regex = /https?:\\/\\/[^\\/\\s\"'>]+/g\nconst websites = input.match(regex)\nreturn websites.map(website => ({json:{website}}))"
+        "jsCode": "const input = $input.first().json.data || '';\nconst regex = /https?:\\/\\/[^\\/\\s\"'>]+/g;\nconst websites = input.match(regex) || [];\nreturn websites.map(website => ({ json: { website } }));"
       },
-      "id": "680d0b42-313d-4e81-a2e0-af23e2c0f62d",
+      "id": "44bd27f2-9fa9-43fb-a21f-a89f46ae4d54",
       "name": "Extract URLs",
       "type": "n8n-nodes-base.code",
       "position": [
-        -560,
-        336
+        688,
+        944
       ],
-      "typeVersion": 2
+      "typeVersion": 2,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -194,37 +198,50 @@
             "response": {
               "fullResponse": true
             }
-          }
+          },
+          "timeout": 15000
         }
       },
-      "id": "0defc12f-6994-4fe3-9cc9-beac99644fce",
+      "id": "23a29892-adf9-4bd7-89fc-fd7160555267",
       "name": "Scrape Google Maps",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        -768,
-        336
+        480,
+        944
       ],
-      "typeVersion": 4.2
+      "typeVersion": 4.2,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "url": "={{ $json.website }}",
-        "options": {
-          "redirect": {
-            "redirect": {
-              "followRedirects": false
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
-          }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "redirect": {
+            "redirect": {}
+          },
+          "timeout": 10000
         }
       },
-      "id": "ccc3332a-cfc1-47b5-913b-cea99dbc5b16",
+      "id": "a28bdcb3-37c2-4576-9cab-de261243cd78",
       "name": "Scrape Site",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        416,
-        432
+        1664,
+        1040
       ],
       "typeVersion": 4.2,
+      "alwaysOutputData": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -252,12 +269,12 @@
         },
         "options": {}
       },
-      "id": "3fb5709c-2f04-4462-a559-8053b431c5b1",
+      "id": "81f84270-6a3d-4205-8235-24294368c6db",
       "name": "Filter Out Empties",
       "type": "n8n-nodes-base.filter",
       "position": [
-        592,
-        272
+        1840,
+        880
       ],
       "typeVersion": 2.2
     },
@@ -312,12 +329,12 @@
         },
         "options": {}
       },
-      "id": "28b847f5-9100-4998-84e8-92b394b780f3",
+      "id": "dcd2c1f5-b15c-4bb8-aa34-038a6dae443f",
       "name": "Filter Google URLs",
       "type": "n8n-nodes-base.filter",
       "position": [
-        -368,
-        336
+        880,
+        944
       ],
       "typeVersion": 2.2
     },
@@ -325,12 +342,12 @@
       "parameters": {
         "options": {}
       },
-      "id": "e2db53a0-e44c-4214-8c9e-44d9a97840fd",
+      "id": "9db58407-6ad8-4fda-a61d-a768e88c361e",
       "name": "Remove Duplicates (2)",
       "type": "n8n-nodes-base.removeDuplicates",
       "position": [
-        976,
-        272
+        2224,
+        880
       ],
       "typeVersion": 2
     },
@@ -376,12 +393,12 @@
           "useAppend": true
         }
       },
-      "id": "c2c332ba-c2b1-4f36-82e3-50c98fc6880b",
+      "id": "2d42841f-8655-4107-9b07-85a564d185aa",
       "name": "Add to Sheet (or whatever you want!)",
       "type": "n8n-nodes-base.googleSheets",
       "position": [
-        1184,
-        272
+        2432,
+        880
       ],
       "typeVersion": 4.5,
       "credentials": {
@@ -564,9 +581,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "3374e3f8-c2d3-497c-965f-d0ec415a2e6d",
+  "versionId": "2d567068-1a35-4fda-810f-bbfcf6bd13f7",
   "activeVersionId": null,
-  "versionCounter": 2,
+  "versionCounter": 6,
   "triggerCount": 0,
   "tags": [],
   "shared": [

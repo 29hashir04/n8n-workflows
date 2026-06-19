@@ -1,2 +1,12 @@
 Successfully exported 7 workflows.
 Exported 7 workflows.
+[main 29496d1] sync: n8n workflows 2026-05-31 02:00
+ 8 files changed, 1056 insertions(+), 48 deletions(-)
+ create mode 100644 My_workflow/workflow.json
+ create mode 100644 TravelVlog_YouTube_Channel_Leads/workflow.json
+ create mode 100644 sync.log
+To https://github.com/29hashir04/n8n-workflows.git
+   b71d8ef..29496d1  main -> main
+Pushed to GitHub successfully.
+Successfully exported 8 workflows.
+Exported 8 workflows.

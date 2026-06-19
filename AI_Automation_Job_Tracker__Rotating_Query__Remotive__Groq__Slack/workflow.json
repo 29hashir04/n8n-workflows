@@ -1,0 +1,1157 @@
+{
+  "updatedAt": "2026-05-30T22:29:30.281Z",
+  "createdAt": "2026-05-30T21:16:37.345Z",
+  "id": "FV25vk1KIvGFG2oq",
+  "name": "AI Automation Job Tracker \u2014 Rotating Query + Remotive + Groq + Slack",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "f884c31b-15ec-40ac-9e19-8cd1f1db0c20",
+      "name": "Daily Schedule \u2014 8 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        4464,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg",
+          "mode": "list",
+          "cachedResultName": "AI Jobs tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1137809422,
+          "mode": "list",
+          "cachedResultName": "Config",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit#gid=1137809422"
+        },
+        "options": {}
+      },
+      "id": "08cf8512-ccda-4506-ab87-67f31845e9d5",
+      "name": "Read Config Index",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        4672,
+        384
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const queries = [\n  'n8n Developer Remote',\n  'AI Automation Specialist Remote',\n  'Workflow Automation Engineer Remote',\n  'AI Integration Developer Remote',\n  'No-Code AI Developer Remote'\n];\n\nconst currentIndex = parseInt($input.first().json.value || 0);\nconst query = queries[currentIndex];\nconst nextIndex = (currentIndex + 1) % queries.length;\n\nreturn [{ json: { query, currentIndex, nextIndex } }];"
+      },
+      "id": "9c0dce6e-4de6-461b-b174-af9fd3b16ed8",
+      "name": "Pick Today's Query",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4864,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg",
+          "mode": "list",
+          "cachedResultName": "AI Jobs tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1137809422,
+          "mode": "list",
+          "cachedResultName": "Config",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit#gid=1137809422"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "current_index": "={{ $json.nextIndex }}",
+            "row_number": 2
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "current_index",
+              "displayName": "current_index",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "value",
+              "displayName": "value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "7dd49f88-7867-40a5-ae3d-0c011a261ff9",
+      "name": "Update Config Index",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        5072,
+        384
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Search for remote AI automation jobs using this query: {{ $('Pick Today\\'s Query').item.json.query }}\n\nSteps:\n1. Call 'Remotive \u2014 Find Jobs' with search = the query above\n2. For each job returned, call 'Check Existing New Job' to see if it exists\n3. If job does not exist, call 'Create New Job Row' to save it\n4. Only save jobs from US, UK, Australia or Remote",
+        "options": {
+          "systemMessage": "Execute the steps in order. Never pass null to any tool. If a tool needs a search term use the query provided. Save only remote jobs from US, UK, AU."
+        }
+      },
+      "id": "938c9bce-108e-4ee0-95aa-1f72abf37584",
+      "name": "AI Agent \u2014 Find AI Jobs",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        5264,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "id": "f57abae2-f3f3-49ad-a0e6-a6e94efad716",
+      "name": "Groq Model \u2014 Jobs",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        5168,
+        672
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "11jBacWPd3zwjyHg",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://remotive.com/api/remote-jobs",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "search",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b2f783f0-be9d-4b22-8ffd-10774672722a",
+      "name": "Remotive \u2014 Find Jobs",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        5312,
+        672
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg",
+          "mode": "list",
+          "cachedResultName": "AI Jobs tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 560230066,
+          "mode": "list",
+          "cachedResultName": "New Jobs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit#gid=560230066"
+        },
+        "options": {}
+      },
+      "id": "41e8341d-5603-477d-848f-8d15631136c1",
+      "name": "Check Existing New Job",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        5456,
+        832
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg",
+          "mode": "list",
+          "cachedResultName": "AI Jobs tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 560230066,
+          "mode": "list",
+          "cachedResultName": "New Jobs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit#gid=560230066"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Company": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Company', ``, 'string') }}",
+            "Date Posted": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date_Posted', ``, 'string') }}",
+            "Salary Range": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Salary_Range', ``, 'string') }}",
+            "Job Title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Job_Title', ``, 'string') }}",
+            "Industry": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Industry', ``, 'string') }}",
+            "Job Link": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Job_Link', ``, 'string') }}",
+            "Job Description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Job_Description', ``, 'string') }}",
+            "Benefits": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Benefits', ``, 'string') }}",
+            "Country": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Country', ``, 'string') }}",
+            "Generated CV": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Generated_CV', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Company"
+          ],
+          "schema": [
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date Posted",
+              "displayName": "Date Posted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Industry",
+              "displayName": "Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job Link",
+              "displayName": "Job Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job Description",
+              "displayName": "Job Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Benefits",
+              "displayName": "Benefits",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Generated CV",
+              "displayName": "Generated CV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "1eb38cb9-040c-4754-9faf-e77062be4a8f",
+      "name": "Create New Job Row",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        5552,
+        656
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Use 'Check Existing New Job' tool and find rows where Generated CV column is blank.\n\nFor each job without a cover letter:\n1. Read job title, company, country, and full job description.\n2. Use 'Get Resume' tool to get my skills and experience.\n3. Write a tailored cover letter that:\n   - Highlights n8n, AI automation, and workflow experience\n   - Matches the specific job requirements\n   - Mentions tools: n8n, Make, Zapier, Python, OpenAI, LangChain, Groq\n   - Professional tone, under 400 words, personalized per company\n4. Use 'Save Cover Letter' tool to save into Generated CV column.\n5. Use 'Send Slack Notification' tool with this exact format:\n\n*New AI Automation Job Found!* \ud83e\udd16\n\n*Title:* [job title]\n*Company:* [company]\n*Country:* [US/UK/AU/Remote]\n*Salary:* [salary range]\n*Job Link:* [link]\n*Sheet:* YOUR_SPREADSHEET_URL",
+        "options": {
+          "systemMessage": "1. Never ask questions. Generate and save immediately.\n2. Cover letter max 400 words.\n3. Highlight AI automation and n8n skills prominently.\n4. Each letter must be unique \u2014 personalized per company and role.\n5. Only process rows where Generated CV column is empty."
+        }
+      },
+      "id": "85524382-0856-4909-b95f-deac338a54a1",
+      "name": "AI Agent \u2014 Generate Cover Letter",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        5568,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "id": "1d6b697f-d2e8-4d5f-81ce-ea2650adbb94",
+      "name": "Groq Model \u2014 CV",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        5728,
+        672
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "11jBacWPd3zwjyHg",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg",
+          "mode": "list",
+          "cachedResultName": "AI Jobs tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1425842117,
+          "mode": "list",
+          "cachedResultName": "Resume",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit#gid=1425842117"
+        },
+        "options": {}
+      },
+      "id": "003e391e-7318-474a-b3fd-40bd8e70984e",
+      "name": "Get Resume",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        5904,
+        704
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg",
+          "mode": "list",
+          "cachedResultName": "AI Jobs tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 560230066,
+          "mode": "list",
+          "cachedResultName": "New Jobs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/185dMkQ5qaTkTBMzUP2-Dw9lCWCkQTyW6N7fsO4o5bsg/edit#gid=560230066"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Company": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Company', 'Company website', 'string') }}",
+            "Generated CV": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Generated_CV', 'Cover letter text', 'string') }}"
+          },
+          "matchingColumns": [
+            "Company"
+          ],
+          "schema": [
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Generated CV",
+              "displayName": "Generated CV",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "528e9a59-a3b4-4f5c-87b0-f193210d2feb",
+      "name": "Save Cover Letter",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        5952,
+        528
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6YAT3reKAdbtnQP4",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#all-wara",
+          "mode": "name"
+        },
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text', '', 'string') }}",
+        "otherOptions": {}
+      },
+      "id": "64a03c45-a723-444a-b51a-8cc67d00f56a",
+      "name": "Send Slack Notification",
+      "type": "n8n-nodes-base.slackTool",
+      "typeVersion": 2.3,
+      "position": [
+        6064,
+        464
+      ],
+      "webhookId": "fca53a97-62fc-4160-8609-ffad12a53b70",
+      "credentials": {
+        "slackApi": {
+          "id": "iKF2XiBQQvOeNduo",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "id": "738c704c-978d-45f3-bda4-16b4bbe793ff",
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        4464,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "f1",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "automation",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f2",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "n8n",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f3",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "AI engineer",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f4",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "workflow",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f5",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "application",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f6",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "interview",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f7",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "hiring",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f8",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "moving forward",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f9",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "rejected",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "f10",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "offer",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "492d75b2-739f-4907-a534-391cb59effe5",
+      "name": "Filter Job Emails",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        4688,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are tracking AI automation job applications.\n\nEmail content: {{ $('Gmail Trigger').item.json.text }}\n\n1. Use 'Check Existing Application' tool to verify if this role already exists (match Company + Job Title).\n2. If EXISTS \u2014 update Status column only based on email content.\n3. If NEW \u2014 use 'Remotive \u2014 Job Lookup' to find full job details, then create a new row.\n\nStatus options:\n- Pending Resume Review\n- Pending Cognitive Assessment\n- Pending Tasks\n- Interview Scheduled\n- Rejected\n- Accepted\n\nColumns for new row:\nA: Company | B: Today's date | C: Salary Range | D: Job Title | E: Industry | F: Job Link | G: Full Job Description | H: Benefits | I: Status",
+        "options": {
+          "systemMessage": "1. Only process emails about AI Automation, n8n, workflow automation, AI engineering.\n2. Exclude newsletters from LinkedIn, Indeed, etc.\n3. No duplicates \u2014 same Company + Job Title = update Status only.\n4. Never ask questions. Just execute.\n5. Salary and Benefits: 'Unspecified' if not found.\n6. Industry: Technology, Information and Media | Professional Services | Financial Services | Education | Other."
+        }
+      },
+      "id": "0ebd8dc6-a1a2-41c9-8850-255e4041bcf4",
+      "name": "AI Agent \u2014 Application Status",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        4912,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "id": "90f7f5a8-85c6-43ad-bc38-e159e6d210ac",
+      "name": "Groq Model \u2014 Status",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        4912,
+        1200
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "11jBacWPd3zwjyHg",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://remotive.com/api/remote-jobs",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "search",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('search', 'job title to search', 'string') }}"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3efe079a-ce72-4ff4-86c5-8fa11b1f94c4",
+      "name": "Remotive \u2014 Job Lookup",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        5056,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Application Status",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "5ae4cb58-e8c1-481e-a74c-9c8ccb6a19cf",
+      "name": "Check Existing Application",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        5216,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Application Status",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Company": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Company', '', 'string') }}",
+            "Date Applied": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date_Applied', '', 'string') }}",
+            "Salary Range": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Salary_Range', '', 'string') }}",
+            "Job Title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Job_Title', '', 'string') }}",
+            "Industry": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Industry', '', 'string') }}",
+            "Job Link": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Job_Link', '', 'string') }}",
+            "Job Description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Job_Description', '', 'string') }}",
+            "Benefits": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Benefits', '', 'string') }}",
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', '', 'string') }}"
+          },
+          "matchingColumns": [
+            "Company",
+            "Job Title"
+          ],
+          "schema": [
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date Applied",
+              "displayName": "Date Applied",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Salary Range",
+              "displayName": "Salary Range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Industry",
+              "displayName": "Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Job Link",
+              "displayName": "Job Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Job Description",
+              "displayName": "Job Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Benefits",
+              "displayName": "Benefits",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "id": "d2953976-ddef-4901-a535-37e15be952a1",
+      "name": "Create / Update Application Row",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        5360,
+        1200
+      ]
+    }
+  ],
+  "connections": {
+    "Daily Schedule \u2014 8 AM": {
+      "main": [
+        [
+          {
+            "node": "Read Config Index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Config Index": {
+      "main": [
+        [
+          {
+            "node": "Pick Today's Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Today's Query": {
+      "main": [
+        [
+          {
+            "node": "Update Config Index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Config Index": {
+      "main": [
+        [
+          {
+            "node": "AI Agent \u2014 Find AI Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Model \u2014 Jobs": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent \u2014 Find AI Jobs",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remotive \u2014 Find Jobs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent \u2014 Find AI Jobs",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing New Job": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent \u2014 Find AI Jobs",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create New Job Row": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent \u2014 Find AI Jobs",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent \u2014 Find AI Jobs": {
+      "main": [
+        [
+          {
+            "node": "AI Agent \u2014 Generate Cover Letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Model \u2014 CV": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent \u2014 Generate Cover Letter",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Resume": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent \u2014 Generate Cover Letter",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Cover Letter": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent \u2014 Generate Cover Letter",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Slack Notification": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent \u2014 Generate Cover Letter",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter Job Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Job Emails": {
+      "main": [
+        [
+          {
+            "node": "AI Agent \u2014 Application Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Model \u2014 Status": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent \u2014 Application Status",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remotive \u2014 Job Lookup": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent \u2014 Application Status",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing Application": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent \u2014 Application Status",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create / Update Application Row": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent \u2014 Application Status",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "8517c97b-fc51-4106-a3aa-32419c843e5e",
+  "activeVersionId": null,
+  "versionCounter": 94,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-05-30T21:16:37.363Z",
+      "createdAt": "2026-05-30T21:16:37.363Z",
+      "role": "workflow:owner",
+      "workflowId": "FV25vk1KIvGFG2oq",
+      "projectId": "Iq1L14HqUAHCPUBu",
+      "project": {
+        "updatedAt": "2026-05-22T10:44:17.180Z",
+        "createdAt": "2026-05-22T10:43:17.263Z",
+        "id": "Iq1L14HqUAHCPUBu",
+        "name": "Hashir Wara <hasheralwara@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ee0472ac-5224-40b4-a822-f71f776399c1"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}
