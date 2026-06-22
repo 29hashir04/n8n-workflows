@@ -10,3 +10,11 @@ To https://github.com/29hashir04/n8n-workflows.git
 Pushed to GitHub successfully.
 Successfully exported 8 workflows.
 Exported 8 workflows.
+[main 54d7280] sync: n8n workflows 2026-06-20 02:00
+ 3 files changed, 1254 insertions(+), 70 deletions(-)
+ create mode 100644 AI_Automation_Job_Tracker__Rotating_Query__Remotive__Groq__Slack/workflow.json
+To https://github.com/29hashir04/n8n-workflows.git
+   29496d1..54d7280  main -> main
+Pushed to GitHub successfully.
+Successfully exported 8 workflows.
+Exported 8 workflows.
